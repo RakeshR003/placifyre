@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-links i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.5s ease;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-card-icon.blue {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .stat-card-icon.green {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success-color);
+        }
+        
+        .stat-card-icon.orange {
+            background-color: rgba(230, 126, 34, 0.1);
+            color: #e67e22;
+        }
+        
+        .stat-card-icon.red {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .stat-card h3 {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .stat-card-change {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-card-change.positive {
+            color: var(--success-color);
+        }
+        
+        .stat-card-change.negative {
+            color: var(--accent-color);
+        }
+        
+        .dashboard-sections {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .dashboard-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recent-tasks {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .recent-tasks th,
+        .recent-tasks td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .recent-tasks th {
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .recent-tasks tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-in-progress {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .dashboard-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background-color: var(--secondary-color);
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem 0;
+                transition: left 0.3s ease;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .nav-links li {
+                margin: 1rem 0;
+            }
+            
+            .recent-tasks {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .dashboard-header h1 {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <span>Placify</span>
+        </div>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/admindashboard">Dashboard</a></li>
+            <li><a href="/studentlist">Student List</a></li>
+            <li><a href="/addcompany">Add Company</a></li>
+            <li><a href="/companylist">Company List</a></li>
+            <li><a href="/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            <div>Welcome back, <strong>Admin</strong>!</div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div style="text-align: center;">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=003366&color=fff&size=75" style="border-radius: 50%;" class="profile-img">
+                        <h3>Admin</h3>
+                        <h3>Placify</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <h3>Total Students</h3>
+                        <p>{{total_students}}</p>
+                    </div>
+                    <div class="stat-card-icon blue">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <h3>Total Companies</h3>
+                        <p>{{total_companies}}</p>
+                    </div>
+                    <div class="stat-card-icon green">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <h3>Total Jobs</h3>
+                        <p>{{total_jobs}}</p>
+                    </div>
+                    <div class="stat-card-icon green">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <h3>Total Applied Jobs</h3>
+                        <p>{{total_appliedjobs}}</p>
+                    </div>
+                    <div class="stat-card-icon blue">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <h3>Total Pending Jobs</h3>
+                        <p>{{total_pendingjobs}}</p>
+                    </div>
+                    <div class="stat-card-icon green">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <h3>Total Accepted Jobs</h3>
+                        <p>{{total_acceptedjobs}}</p>
+                    </div>
+                    <div class="stat-card-icon green">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <h3>Total Rejected Jobs</h3>
+                        <p>{{total_rejectedjobs}}</p>
+                    </div>
+                    <div class="stat-card-icon green">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+       
+        </div>
+
+        <div class="stats-card" style="display: flex;flex-wrap: wrap;justify-content: space-between;">
+            <div  style="width: 35%;margin-bottom: 50px;">
+            <canvas id="placementChart"></canvas>
+            </div>    
+            <div  style="width: 60%;">
+                    <h5 class="mb-3">Branch v/s Students</h5>
+                    <canvas id="cgpaChart" height="170"></canvas>
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+
+    <script>
+
+        // Initialize Placement Status Pie Chart
+        const placementCtx = document.getElementById('placementChart').getContext('2d');
+        const placementChart = new Chart(placementCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Placed', 'Unplaced', 'Pending'],
+                datasets: [{
+                    data: [{{total_acceptedjobs}}, {{total_rejectedjobs}}, {{total_pendingjobs}}], // Replace with your actual variables
+                    backgroundColor: [
+                        'rgba(0, 128, 0, 0.7)',      // Green for placed
+                        'rgba(255, 0, 0, 0.7)',       // Red for unplaced
+                        'rgba(255, 165, 0, 0.7)'     // Orange for pending
+                    ],
+                    borderColor: [
+                        'rgba(0, 128, 0, 1)',
+                        'rgba(255, 0, 0, 1)',
+                        'rgba(255, 165, 0, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Placement Status Distribution',
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            }
+        });
+
+
+        // Initialize CGPA Chart
+        const ctx = document.getElementById('cgpaChart').getContext('2d');
+        const cgpaChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['B.Tech', 'M.Tech', 'B.Sc', 'M.Sc'],
+                datasets: [{
+                    label: 'CGPA Progress',
+                    data: [{{degree[0]}}, {{degree[1]}}, {{degree[2]}}, {{degree[2]}}],
+                    backgroundColor: 'rgba(0, 51, 102, 0.1)',
+                    borderColor: 'rgba(0, 51, 102, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+        if('{{msg}}'){
+            alert('{{msg}}');
+        }
+    </script>
+</body>
+</html>

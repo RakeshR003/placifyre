@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placify</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #e74c3c;
+            --accent-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+        }
+        
+        .navbar {
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            padding: 8px 15px;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link:hover,
+        .navbar-dark .navbar-nav .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .auth-container {
+            margin: 80px auto;
+            max-width: 800px;
+        }
+        
+        .auth-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+        
+        .auth-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        .form-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 15px;
+            color: var(--primary-color);
+        }
+        
+        .form-control {
+            padding-left: 45px;
+            height: 50px;
+            border-radius: 8px;
+        }
+        
+        .btn-auth {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            height: 50px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-auth:hover {
+            background-color: #c0392b;
+            color: white;
+        }
+        
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .progress-container {
+            margin-bottom: 30px;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            color: #6c757d;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .progress-step.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .progress-step.completed {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            background-color: #dee2e6;
+            left: 100%;
+        }
+        
+        .progress-step.active:not(:last-child)::after,
+        .progress-step.completed:not(:last-child)::after {
+            background-color: var(--accent-color);
+        }
+        
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .skill-tag {
+            background-color: #e9ecef;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .skill-tag .remove-skill {
+            margin-left: 8px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .form-password-toggle {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 15px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-container {
+                margin: 40px auto;
+            }
+            
+            .auth-body {
+                padding: 20px;
+            }
+            
+            .progress-step:not(:last-child)::after {
+                width: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <div>
+                    <h4 class="mb-0">Placify</h4>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/studentlogin">Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/companylogin">Company</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/adminlogin">Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Authentication Container -->
+    <div class="container auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h3><i class="fas fa-user-graduate me-2"></i> Add Student</h3>
+            </div>
+            
+            <div class="auth-body">
+                <!-- Progress Steps -->
+                <div class="progress-container d-flex justify-content-between mb-4">
+                    <div class="progress-step completed" data-step="1">
+                        <span>1</span>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <span>2</span>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <span>3</span>
+                    </div>
+                </div>
+                
+                <form action="/addstudent" method="post" enctype="multipart/form-data">
+                <!-- Personal Details Section -->
+                <div class="form-section active" id="section-1">
+                    <h5 class="mb-4"><i class="fas fa-user me-2"></i>Personal Details</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-user form-icon"></i>
+                                    <input type="text" class="form-control" name="fname" placeholder="First Name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-user form-icon"></i>
+                                    <input type="text" class="form-control" name="lname" placeholder="Last Name" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-envelope form-icon"></i>
+                                    <input type="email" class="form-control" name="email" placeholder="Email" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-phone form-icon"></i>
+                                    <input type="tel" class="form-control" name="phone" placeholder="Phone Number" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-calendar form-icon"></i>
+                                    <input type="date" class="form-control" name="dob" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-phone form-icon"></i>
+                                    <input type="text" class="form-control" name="parent_phone" placeholder="Parents Phone Number" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-user form-icon"></i>
+                                    <select class="form-control" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-address-card form-icon"></i>
+                                    <input type="text" class="form-control" name="address" placeholder="Address" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary" disabled>
+                                <i class="fas fa-arrow-left me-1"></i> Previous
+                            </button>
+                            <button type="button" class="btn btn-primary next-btn">
+                                Next <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+
+                </div>
+                
+                <!-- Academic Details Section -->
+                <div class="form-section" id="section-2">
+                    <h5 class="mb-4"><i class="fas fa-graduation-cap me-2"></i>Academic Details</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-id-card form-icon"></i>
+                                    <input type="text" class="form-control" name="studentid" placeholder="Student ID" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-university form-icon"></i>
+                                    <select class="form-control" name="degree" required>
+                                        <option value="">Select Degree</option>
+                                        <option value="B.Tech">B.Tech</option>
+                                        <option value="M.Tech">M.Tech</option>
+                                        <option value="B.Sc">B.Sc</option>
+                                        <option value="M.Sc">M.Sc</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-code-branch form-icon"></i>
+                                    <select class="form-control" name="branch" required>
+                                        <option value="">Select Branch</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Electrical">Electrical</option>
+                                        <option value="Mechanical">Mechanical</option>
+                                        <option value="Civil">Civil</option>
+                                        <option value="Electronics">Electronics</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-percentage form-icon"></i>
+                                    <input type="number" step="0.01" min="0" max="10" class="form-control" name="cgpa1" placeholder="CGPA 1st semester" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-percentage form-icon"></i>
+                                    <input type="number" step="0.01" min="0" max="10" class="form-control" name="cgpa2" placeholder="CGPA 2nd semester" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-percentage form-icon"></i>
+                                    <input type="number" step="0.01" min="0" max="10" class="form-control" name="cgpa3" placeholder="CGPA 3rd semester" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-percentage form-icon"></i>
+                                    <input type="number" step="0.01" min="0" max="10" class="form-control" name="cgpa4" placeholder="CGPA 4th semester" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-percentage form-icon"></i>
+                                    <input type="number" step="0.01" min="0" max="10" class="form-control" name="cgpa5" placeholder="CGPA 5th semester" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-percentage form-icon"></i>
+                                    <input type="number" step="0.01" min="0" max="10" class="form-control" name="cgpa6" placeholder="CGPA 6th semester" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-percentage form-icon"></i>
+                                    <input type="number" step="0.01" min="0" max="10" class="form-control" name="cgpatotal" placeholder="CGPA total" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-book form-icon"></i>
+                                    <input type="number" step="1" min="0" class="form-control" name="backlogs" placeholder="Number of Backlogs (if any)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="">Joining</label>
+                                <div class="position-relative">
+                                    <i class="fas fa-calendar form-icon"></i>
+                                    <input type="date" class="form-control" name="join" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="">passout</label>
+                                <div class="position-relative">
+                                    <i class="fas fa-calendar form-icon"></i>
+                                    <input type="date" class="form-control" name="passout" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary prev-btn">
+                                <i class="fas fa-arrow-left me-1"></i> Previous
+                            </button>
+                            <button type="button" class="btn btn-primary next-btn">
+                                Next <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                </div>
+                
+                <!-- Resume Upload Section -->
+                <div class="form-section" id="section-3">
+                    <h5 class="mb-4"><i class="fas fa-file-upload me-2"></i>Resume Upload</h5>
+  
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="position-relative">
+                                    <i class="fas fa-file-pdf form-icon"></i>
+                                    <input type="file" class="form-control" name="resume" accept=".pdf,.doc,.docx" required>
+                                </div>
+                                <small class="text-muted">Upload your resume in PDF format (max 5MB)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary prev-btn">
+                                <i class="fas fa-arrow-left me-1"></i> Previous
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Submit
+                            </button>
+                        </div>
+                    
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form navigation
+            let currentSection = 1;
+            const totalSections = 5;
+            
+            // Initialize skills and tools arrays
+            const skills = [];
+            const tools = [];
+            
+            // Navigation buttons
+            const nextButtons = document.querySelectorAll('.next-btn');
+            const prevButtons = document.querySelectorAll('.prev-btn');
+            
+            // Progress steps
+            const progressSteps = document.querySelectorAll('.progress-step');
+            
+            // Next button click handler
+            nextButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (validateSection(currentSection)) {
+                        navigateToSection(currentSection + 1);
+                    }
+                });
+            });
+            
+            // Previous button click handler
+            prevButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    navigateToSection(currentSection - 1);
+                });
+            });
+            
+            // Navigate to specific section
+            function navigateToSection(sectionNumber) {
+                // Hide current section
+                document.getElementById(`section-${currentSection}`).classList.remove('active');
+                
+                // Update progress steps
+                progressSteps[currentSection - 1].classList.remove('active');
+                if (currentSection < sectionNumber) {
+                    progressSteps[currentSection - 1].classList.add('completed');
+                } else {
+                    progressSteps[currentSection - 1].classList.remove('completed');
+                }
+                
+                // Update current section
+                currentSection = sectionNumber;
+                
+                // Show new section
+                document.getElementById(`section-${currentSection}`).classList.add('active');
+                progressSteps[currentSection - 1].classList.add('active');
+            }
+            
+            // Validate current section before proceeding
+            function validateSection(sectionNumber) {
+                const section = document.getElementById(`section-${sectionNumber}`);
+                const inputs = section.querySelectorAll('input[required], select[required]');
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+                
+                // Special validation for section 3 (skills)
+                if (sectionNumber === 3 && (skills.length === 0 || tools.length === 0)) {
+                    alert('Please add at least one skill and one tool');
+                    return false;
+                }
+                
+                return isValid;
+            }
+            
+            // Skills input handling
+            const skillInput = document.getElementById('skill-input');
+            const skillsContainer = document.getElementById('skills-container');
+            
+            skillInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const skill = this.value.trim();
+                    if (skill && !skills.includes(skill)) {
+                        skills.push(skill);
+                        renderSkills();
+                    }
+                    this.value = '';
+                }
+            });
+            
+            // Tools input handling
+            const toolInput = document.getElementById('tool-input');
+            const toolsContainer = document.getElementById('tools-container');
+            
+            toolInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const tool = this.value.trim();
+                    if (tool && !tools.includes(tool)) {
+                        tools.push(tool);
+                        renderTools();
+                    }
+                    this.value = '';
+                }
+            });
+            
+            // Render skills tags
+            function renderSkills() {
+                skillsContainer.innerHTML = '';
+                skills.forEach((skill, index) => {
+                    const tag = document.createElement('div');
+                    tag.className = 'skill-tag';
+                    tag.innerHTML = `
+                        ${skill}
+                        <span class="remove-skill" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </span>
+                    `;
+                    skillsContainer.appendChild(tag);
+                });
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-skill').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        skills.splice(index, 1);
+                        renderSkills();
+                    });
+                });
+            }
+            
+            // Render tools tags
+            function renderTools() {
+                toolsContainer.innerHTML = '';
+                tools.forEach((tool, index) => {
+                    const tag = document.createElement('div');
+                    tag.className = 'skill-tag';
+                    tag.innerHTML = `
+                        ${tool}
+                        <span class="remove-skill" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </span>
+                    `;
+                    toolsContainer.appendChild(tag);
+                });
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-skill').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        tools.splice(index, 1);
+                        renderTools();
+                    });
+                });
+            }
+        });
+    </script>
+
+    <script>
+        if('{{msg}}'){
+            alert('{{msg}}');
+        }
+    </script>
+</body>
+</html>

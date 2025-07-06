@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placify - Student Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #e74c3c;
+            --accent-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --success-color: #28a745;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            padding: 8px 15px;
+            transition: all 0.3s;
+            margin-left: 20px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .btn-logout {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-logout:hover {
+            background-color: #c0392b;
+        }
+        
+        .welcome-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            margin-bottom: 30px;
+            height: 100%;
+            cursor: pointer;
+            border-top: 5px solid var(--primary-color);
+            text-align: center;
+            padding: 25px 15px;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .action-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .profile-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(0, 51, 102, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .stats-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .info-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <div>
+                    <h4 class="mb-0">Placify</h4>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/studenthome"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analyse"><i class="fas fa-line-chart me-1"></i> Analyse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/jobs"><i class="fas fa-list me-1"></i> Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/appliedjobs"><i class="fas fa-list me-1"></i> Applied Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/resetpassword"><i class="fas fa-key me-1"></i> Reset Password</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-logout" href="/">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Dashboard Content -->
+        <div class="row mt-4">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Welcome Section -->
+        <div class="welcome-card mt-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <img src="https://ui-avatars.com/api/?name={{user[1]}} {{user[2]}}&background=003366&color=fff&size=120" alt="Profile" class="profile-img">
+                    <h2>Welcome back, {{user[1]}} {{user[2]}}!</h2>
+                    <p class="lead">{{user[3]}}</p>
+                    <p class="text-muted">Student ID: {{user[9]}} | {{user[10]}} in {{user[11]}}</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <span class="badge bg-success p-2">Active</span>
+                    <p class="text-muted mt-2">Member since {{user[-1]}}</p>
+                </div>
+            </div>
+        </div>
+        <br>
+                <!-- Quick Stats -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stats-card">
+                            <div class="stat-number">{{user[18]}}</div>
+                            <div class="stat-label">Overall CGPA</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card">
+                            <div class="stat-number">{{user[-6]}}</div>
+                            <div class="stat-label">Backlogs</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card">
+                            <div class="stat-number">{{applied_jobs}}</div>
+                            <div class="stat-label">Jobs Applied</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CGPA Progress Chart -->
+                <div class="chart-container">
+                    <h5 class="mb-3">Academic Performance</h5>
+                    <canvas id="cgpaChart" height="250"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- Personal Information -->
+                 <br>
+                <div class="info-card">
+                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Personal Information</h5>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Student ID:</div>
+                        <div class="col-7">{{user[9]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Date of Birth:</div>
+                        <div class="col-7">{{user[5]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Gender:</div>
+                        <div class="col-7">{{user[7]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Phone:</div>
+                        <div class="col-7">{{user[4]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Parent Phone:</div>
+                        <div class="col-7">{{user[6]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Address:</div>
+                        <div class="col-7">{{user[8]}}</div>
+                    </div>
+                </div>
+
+                <!-- Academic Information -->
+                <div class="info-card">
+                    <h5 class="mb-3"><i class="fas fa-graduation-cap me-2"></i>Academic Information</h5>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Degree:</div>
+                        <div class="col-7">{{user[10]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Branch:</div>
+                        <div class="col-7">{{user[11]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Join Date:</div>
+                        <div class="col-7">{{user[20]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Passout Date:</div>
+                        <div class="col-7">{{user[21]}}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 info-label">Current CGPA:</div>
+                        <div class="col-7">{{user[18]}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5 info-label">Backlogs:</div>
+                        <div class="col-7">{{user[-6]}}</div>
+                    </div>
+                </div>
+
+
+                <div class="info-card">
+                    <canvas id="placementChart"></canvas>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        // Initialize Placement Status Pie Chart
+        const placementCtx = document.getElementById('placementChart').getContext('2d');
+        const placementChart = new Chart(placementCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Placed', 'Unplaced', 'Pending'],
+                datasets: [{
+                    data: [{{placed_count}}, {{unplaced_count}}, {{pending_count}}], // Replace with your actual variables
+                    backgroundColor: [
+                        'rgba(0, 128, 0, 0.7)',      // Green for placed
+                        'rgba(255, 0, 0, 0.7)',       // Red for unplaced
+                        'rgba(255, 165, 0, 0.7)'     // Orange for pending
+                    ],
+                    borderColor: [
+                        'rgba(0, 128, 0, 1)',
+                        'rgba(255, 0, 0, 1)',
+                        'rgba(255, 165, 0, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Placement Status Distribution',
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            }
+        });
+
+        // Display alert message if any
+        if('{{msg}}'){
+            alert('{{msg}}');
+        }
+    </script>
+    <script>
+        // Initialize CGPA Chart
+        const ctx = document.getElementById('cgpaChart').getContext('2d');
+        const cgpaChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6'],
+                datasets: [{
+                    label: 'CGPA Progress',
+                    data: [{{user[12]}}, {{user[13]}}, {{user[14]}}, {{user[15]}}, {{user[16]}}, {{user[17]}}],
+                    backgroundColor: 'rgba(0, 51, 102, 0.1)',
+                    borderColor: 'rgba(0, 51, 102, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 0,
+                        max: 10,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'CGPA: ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
