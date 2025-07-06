@@ -37,7 +37,7 @@ MarkupSafe==3.0.2
 mdurl==0.1.2
 multidict==6.2.0
 murmurhash==1.0.13
-nltk==3.9.1
+nltk
 numpy==2.3.1
 packaging==25.0
 pandas==2.3.0
