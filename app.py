@@ -4,6 +4,9 @@ import sqlite3
 import random
 import string
 import smtplib
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
 from email.message import EmailMessage
 from werkzeug.utils import secure_filename
 from datetime import datetime
